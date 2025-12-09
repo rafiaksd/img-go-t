@@ -1,0 +1,1 @@
+1. auto resize images if greater than 1mb

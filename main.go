@@ -63,10 +63,21 @@ func main() {
 		if err == nil {
 			os.MkdirAll("./uploads", os.ModePerm)
 
-			filename := filepath.Join("uploads", file.Filename)
-			c.SaveFile(file, filename)
+			shortID := uuid.New().String()[:8]
 
-			imagePath = "/" + filename
+			// Clean the original filename
+			ext := filepath.Ext(file.Filename)
+			name := strings.TrimSuffix(file.Filename, ext)
+
+			// New filename with UUID
+			newFilename := name + "_" + shortID + ext
+			savePath := filepath.Join("uploads", newFilename)
+
+			if err := c.SaveFile(file, savePath); err != nil {
+				return c.Status(500).SendString("Failed to save file")
+			}
+
+			imagePath = "/" + savePath
 		}
 
 		post := Post{
