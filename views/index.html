@@ -62,21 +62,48 @@
 
   <script>
     const quill = new Quill("#editor", {
-      theme: "snow",
-      modules: {
-        toolbar: [
-          [{ header: [1, 2, false] }],
-          ["bold", "italic", "underline"],
-          ["link", "image"],
-          [{ list: "ordered" }, { list: "bullet" }]
-        ]
-      }
-    });
+     theme: "snow",
+     modules: {
+          toolbar: {
+               container: [
+               [{ header: [1, 2, false] }],
+               ["bold", "italic", "underline"],
+               ["link", "image"],
+               [{ list: "ordered" }, { list: "bullet" }]
+               ],
+               handlers: {
+               image: imageHandler
+               }
+          }
+     }});
+
 
     // Save Quill content inside hidden input when submitting
     document.querySelector("form").onsubmit = () => {
       document.getElementById("content").value = quill.root.innerHTML;
     };
+
+    function imageHandler() {
+          const input = document.createElement('input');
+          input.setAttribute('type', 'file');
+          input.setAttribute('accept', 'image/*');
+          input.click();
+
+          input.onchange = async () => {
+               const file = input.files[0];
+               const formData = new FormData();
+               formData.append('image', file);
+
+               const res = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+               });
+
+               const data = await res.json(); // { url: '/uploads/filename.jpg' }
+               const range = quill.getSelection();
+               quill.insertEmbed(range.index, 'image', data.url);
+               };
+          }
   </script>
 
 </body>

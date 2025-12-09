@@ -4,6 +4,10 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/google/uuid"
+
 	"html/template"
 
 	"github.com/gofiber/fiber/v2"
@@ -73,6 +77,35 @@ func main() {
 
 		db.Create(&post)
 		return c.Redirect("/")
+	})
+
+	// handle embeded images (images inside quil txt editor)
+	app.Post("/upload", func(c *fiber.Ctx) error {
+		file, err := c.FormFile("image")
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "No img file uploaded"})
+		}
+
+		os.MkdirAll("./uploads", os.ModePerm)
+
+		// generate 8 character UUID
+		shortID := uuid.New().String()[:8]
+
+		// Clean the original filename (remove path)
+		ext := filepath.Ext(file.Filename)
+		name := strings.TrimSuffix(file.Filename, ext)
+
+		// New filename with UUID
+		newFilename := name + "_" + shortID + ext
+		savePath := filepath.Join("uploads", newFilename)
+
+		// Save the file
+		if err := c.SaveFile(file, savePath); err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to save file"})
+		}
+
+		// Return URL to client
+		return c.JSON(fiber.Map{"url": "/" + savePath})
 	})
 
 	// start Fatal
