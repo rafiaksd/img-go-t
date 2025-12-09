@@ -1,0 +1,2 @@
+# Ignore all HTML templates for language stats
+views/* linguist-vendored
