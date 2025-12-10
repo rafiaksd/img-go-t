@@ -14,6 +14,8 @@ import (
 	"github.com/gofiber/template/html/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	"github.com/disintegration/imaging"
 )
 
 // DB model
@@ -77,6 +79,28 @@ func main() {
 				return c.Status(500).SendString("Failed to save file")
 			}
 
+			// Open image for compression
+			img, err := imaging.Open(savePath)
+			if err != nil {
+				log.Println("Failed to open uploaded image for compression:", err)
+			} else {
+				width := img.Bounds().Dx()
+				height := img.Bounds().Dy()
+				log.Printf("Original image width: %dx%d\n", width, height)
+
+				// Compress if width > 800px
+				if width > 800 {
+					img = imaging.Resize(img, 800, 0, imaging.Lanczos)
+					if err := imaging.Save(img, savePath); err != nil {
+						log.Println("Failed to save compressed image:", err)
+					} else {
+						newWidth := img.Bounds().Dx()
+						newHeight := img.Bounds().Dy()
+						log.Printf("Image compressed to: %dx%d\n", newWidth, newHeight)
+					}
+				}
+			}
+
 			imagePath = "/" + savePath
 		}
 
@@ -113,6 +137,26 @@ func main() {
 		// Save the file
 		if err := c.SaveFile(file, savePath); err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to save file"})
+		}
+
+		// Open image for compression
+		img, err := imaging.Open(savePath)
+		if err != nil {
+			log.Println("Failed to open uploaded image for compression:", err)
+		} else {
+			width := img.Bounds().Dx()
+			log.Printf("Original image width: %dpx\n", width)
+
+			if width > 800 {
+				img = imaging.Resize(img, 800, 0, imaging.Lanczos)
+				if err := imaging.Save(img, savePath); err != nil {
+					log.Println("Failed to save compressed embedded image:", err)
+				} else {
+					newWidth := img.Bounds().Dx()
+					newHeight := img.Bounds().Dy()
+					log.Printf("Embedded image compressed to: %dx%d\n", newWidth, newHeight)
+				}
+			}
 		}
 
 		// Return URL to client

@@ -3,6 +3,7 @@ module img-go
 go 1.25.4
 
 require (
+	github.com/disintegration/imaging v1.6.2
 	github.com/gofiber/fiber/v2 v2.52.10
 	github.com/gofiber/template/html/v2 v2.1.3
 	github.com/google/uuid v1.6.0
@@ -25,6 +26,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
+	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.20.0 // indirect
 )

@@ -14,9 +14,14 @@
 
   <style>
     .prose img {
-      max-width: 100%;
+      max-width: 500px;
+      max-height: 350px;
       border-radius: 8px;
       margin-top: 12px;
+    }
+    .b-img {
+        max-width: 500px;
+        max-height: 350px;
     }
   </style>
 </head>
@@ -33,7 +38,7 @@
         class="w-full p-2 border border-gray-300 rounded mb-4"
         placeholder="Post title">
 
-      <div id="editor" class="h-[720px] border border-gray-300 rounded mb-4"></div>
+      <div id="editor" class="h-96 border border-gray-300 rounded mb-4"></div>
 
       <input type="hidden" name="content" id="content">
 
@@ -53,7 +58,7 @@
         <div class="prose mt-2">{{ .Content }}</div>
 
         {{if .Image}}
-        <img src="{{.Image}}" class="mt-4 rounded-lg shadow">
+        <img src="{{.Image}}" class="b-img mt-4 rounded-lg shadow">
         {{end}}
       </div>
     {{end}}

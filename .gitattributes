@@ -1,2 +1,5 @@
 # Ignore all HTML templates for language stats
-views/* linguist-vendored
+*.html linguist-vendored
+
+# mark Go files explicitly
+# *.go linguist-language=Go
